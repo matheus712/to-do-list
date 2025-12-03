@@ -10,10 +10,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
   <style>
+
+    /* ===== FUNDO ANIMADO ESCURO ===== */
     body {
       font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: #fff;
+      background: linear-gradient(135deg, #021014, #031a20, #000f12);
+      background-size: 400% 400%;
+      animation: bgMove 12s infinite alternate ease-in-out;
+      color: #d9e6e6;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -22,150 +26,220 @@
       transition: background-color 0.4s, color 0.4s;
     }
 
+    @keyframes bgMove {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 100% 100%; }
+    }
+
+    /* ===== CONTAINER ===== */
     .agenda {
       max-width: 600px;
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-      transition: background 0.4s;
+      background: rgba(0, 20, 25, 0.65);
+      backdrop-filter: blur(6px);
+      padding: 25px;
+      border-radius: 15px;
+      border: 1px solid rgba(0, 90, 90, 0.35);
+      box-shadow: 0 0 25px rgba(0, 50, 60, 0.3);
+      transition: background 0.4s, box-shadow 0.4s;
     }
 
     h2 {
       text-align: center;
+      font-size: 25px;
+      text-shadow: 0 0 10px #0a3d3d;
     }
 
-    .evento {
-      background: #333;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #fff;
-      animation: fadeInUp 0.5s ease-in-out;
-    }
-
-    .evento button {
-      background: red;
-      color: white;
-      border: none;
-      padding: 2px 3px;
-      cursor: pointer;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-
-    input, button {
-      width: 97%;
-      padding: 10px;
-      margin-top: 14px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      transition: background 0.3s, color 0.3s;
-    }
-
+    /* ===== INPUTS ===== */
     input {
-      background: #222;
-      color: #fff;
+      width: 97%;
+      padding: 12px;
+      margin-top: 15px;
+      background: #022124;
+      border: 1px solid #0a3d3d;
+      border-radius: 8px;
+      color: #a9d3d3;
+      font-size: 16px;
+      outline: none;
+      transition: 0.3s;
     }
 
+    input:focus {
+      box-shadow: 0 0 12px #0a3d3d;
+    }
+
+    /* ===== BOTÃO PRINCIPAL ===== */
     button {
-      background: #0b0b0b;
-      color: white;
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      background: linear-gradient(135deg, #0a3d3d, #062e4a);
+      color: #d6eeee;
+      font-weight: bold;
       cursor: pointer;
+      transition: 0.3s;
     }
 
     button:hover {
-      background-color: #000;
+      transform: scale(1.04);
+      box-shadow: 0 0 15px #0a3d3d;
     }
 
-    /* Tema claro */
+    /* ===== EVENTO ===== */
+    .evento {
+      background: rgba(0, 10, 14, 0.6);
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border-left: 4px solid #0a3d3d;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #d9e6e6;
+      box-shadow: 0 0 12px rgba(0, 60, 70, 0.3);
+      animation: fadeInUp 0.5s ease-in-out;
+    }
+
+    /* ===== BOTÃO X (REVISADO PARA TONS ESCUROS) ===== */
+    .evento button.remover {
+      background: rgba(10, 60, 60, 0.15);
+      border: 1px solid rgba(20, 90, 90, 0.5);
+      color: #7fc1c1;
+      padding: 6px 10px;
+      font-size: 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: 0.25s ease;
+      backdrop-filter: blur(3px);
+    }
+
+    .evento button.remover:hover {
+      background: rgba(20, 110, 110, 0.35);
+      color: #a8f0f0;
+      transform: scale(1.18);
+      box-shadow: 0 0 12px #0a3d3d;
+    }
+
+    /* ===== TEMA CLARO SUAVE (ESCURÃO TB) ===== */
     .light-theme {
-      background-color: #f5f5f5;
+      background: #cfd8d8;
       color: #000;
     }
 
     .light-theme .agenda {
-      background: #fff;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      background: #f2f7f7ee;
+      border: 1px solid #0a3d3d;
+      box-shadow: 0 0 20px rgba(0, 60, 80, 0.3);
     }
 
     .light-theme input {
-      background: #ddd;
-      color: #000;
+      background: #e3eded;
+      color: #062e32;
+      border-color: #0a3d3d;
     }
 
     .light-theme button {
-      background: #222;
+      background: linear-gradient(135deg, #0a3d3d, #09405e);
       color: white;
     }
 
-    /* Animações suaves CSS */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .light-theme .evento {
+      background: rgba(230, 240, 240, 0.85);
+      border-left: 4px solid #062e32;
+      color: #062e32;
     }
 
-    /* Botão de tema */
+    /* ===== BOTÃO DE TEMA ===== */
     #toggleTema {
       float: right;
       background: transparent;
-      border: 1px solid #fff;
+      border: 1px solid #0a3d3d;
       padding: 6px 10px;
       margin-top: -10px;
       margin-bottom: 10px;
-      border-radius: 5px;
-      color: #fff;
+      border-radius: 8px;
+      color: #0a3d3d;
       font-size: 14px;
       cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .light-theme #toggleTema {
-      color: #000;
-      border-color: #000;
+      transition: 0.3s;
     }
 
     #toggleTema:hover {
-      background: #444;
+      background: rgba(10, 60, 60, 0.3);
     }
-  </style>
+
+  
+
+/* ===== NOVA ORGANIZAÇÃO DO EVENTO ===== */
+.evento {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: rgba(0, 10, 14, 0.65);
+  border: 1px solid #0d2f30;
+  border-radius: 12px;
+  margin: 12px 0;
+}
+
+.evento-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.evento-titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #bfe7e0;
+}
+
+.evento button.remover {
+  margin-left: 20px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+</style>
 </head>
 <body>
   <div class="agenda">
     <button id="toggleTema">🌙 Tema</button>
+
     <h2>🧠 Agenda Inteligente</h2>
-    <input type="datetime-local" id="data" min="1900-01-01T00:00" max="2100-12-31T23:59">
+
+    <input type="datetime-local" id="data">
     <input type="text" id="evento" placeholder="Digite o evento">
     <button id="adicionar">Adicionar Evento</button>
+
     <div id="eventos"></div>
   </div>
 
   <script>
     $(document).ready(function () {
-      // Adiciona novo evento com animação
+
       $('#adicionar').click(function () {
         let data = $('#data').val();
         let evento = $('#evento').val();
 
         if (data && evento) {
           let dateTime = luxon.DateTime.fromISO(data).toFormat('dd/MM/yyyy HH:mm');
+
           let novoEvento = `
             <div class='evento animate__animated animate__fadeInUp'>
-              <strong>${dateTime}</strong> <span>${evento}</span>
-              <button class='remover'>X</button>
-            </div>`;
+              <div class="evento-top">
+                <span class="evento-titulo">${evento}</span>
+                <button class='remover'>X</button>
+              </div>
+              <strong>${dateTime}</strong>
+            </div>
+          `;
 
           $('#eventos').append(novoEvento);
+
           $('#data').val('');
           $('#evento').val('');
         } else {
@@ -173,19 +247,18 @@
         }
       });
 
-      // Remover evento
       $(document).on('click', '.remover', function () {
         $(this).parent().addClass('animate__fadeOut').fadeOut(300, function () {
           $(this).remove();
         });
       });
 
-      // Alternar tema
-      const botaoTema = document.getElementById('toggleTema');
-      botaoTema.addEventListener('click', () => {
+      document.getElementById('toggleTema').addEventListener('click', () => {
         document.body.classList.toggle('light-theme');
-        botaoTema.textContent = document.body.classList.contains('light-theme') ? '🌞 Tema' : '🌙 Tema';
+        toggleTema.textContent =
+          document.body.classList.contains('light-theme') ? '🌞 Tema' : '🌙 Tema';
       });
+
     });
   </script>
 </body>
