@@ -1,265 +1,191 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Agenda Inteligente</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.1/build/global/luxon.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agenda (cinza metálico)</title>
 
-  <style>
-
-    /* ===== FUNDO ANIMADO ESCURO ===== */
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #021014, #031a20, #000f12);
-      background-size: 400% 400%;
-      animation: bgMove 12s infinite alternate ease-in-out;
-      color: #d9e6e6;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      transition: background-color 0.4s, color 0.4s;
+<style>
+    :root{
+      --bg:#2b2b2b;
+      --panel:#3a3a3a;
+      --muted:#5a5a5a;
+      --metal:#d9d9d9;
+      --text:#f2f2f2;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        position: relative;
+        -webkit-font-smoothing:antialiased;
     }
 
-    @keyframes bgMove {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 100% 100%; }
+    /* Estrelas */
+    .star {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: var(--metal);
+        border-radius: 50%;
+        animation: blink 2s infinite ease-in-out;
+        opacity: 0.7;
+        pointer-events:none;
     }
 
-    /* ===== CONTAINER ===== */
-    .agenda {
-      max-width: 600px;
-      background: rgba(0, 20, 25, 0.65);
-      backdrop-filter: blur(6px);
-      padding: 25px;
-      border-radius: 15px;
-      border: 1px solid rgba(0, 90, 90, 0.35);
-      box-shadow: 0 0 25px rgba(0, 50, 60, 0.3);
-      transition: background 0.4s, box-shadow 0.4s;
+    @keyframes blink {
+        0% { opacity: 0.2; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.4); }
+        100% { opacity: 0.2; transform: scale(1); }
     }
 
-    h2 {
-      text-align: center;
-      font-size: 25px;
-      text-shadow: 0 0 10px #0a3d3d;
+    /* Center panel */
+    .panel{
+      width: 92%; max-width:780px; background: rgba(58,58,58,0.95); border-radius:14px; padding:22px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03);
+      display:flex;flex-direction:column;gap:16px;align-items:center;
+      text-align:center;
     }
 
-    /* ===== INPUTS ===== */
-    input {
-      width: 97%;
-      padding: 12px;
-      margin-top: 15px;
-      background: #022124;
-      border: 1px solid #0a3d3d;
-      border-radius: 8px;
-      color: #a9d3d3;
-      font-size: 16px;
-      outline: none;
-      transition: 0.3s;
-    }
+    .main-btn{background:var(--panel);border:1px solid var(--muted);padding:12px 20px;border-radius:8px;color:var(--text);cursor:pointer}
+    .main-btn:hover{background:#4a4a4a}
 
-    input:focus {
-      box-shadow: 0 0 12px #0a3d3d;
-    }
+    /* Modal common */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);align-items:center;justify-content:center}
+    .modal.show{display:flex}
+    .modal-card{background:var(--panel);padding:18px;border-radius:10px;min-width:280px;max-width:480px;box-shadow:0 6px 20px rgba(0,0,0,0.6);}
 
-    /* ===== BOTÃO PRINCIPAL ===== */
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 8px;
-      font-size: 17px;
-      background: linear-gradient(135deg, #0a3d3d, #062e4a);
-      color: #d6eeee;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+    .close-btn{position:absolute;right:12px;top:12px;background:var(--panel);padding:6px 10px;border-radius:6px;border:1px solid var(--muted);cursor:pointer}
 
-    button:hover {
-      transform: scale(1.04);
-      box-shadow: 0 0 15px #0a3d3d;
-    }
+    input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--muted);background:transparent;color:var(--text);margin-top:10px}
+    .save-btn{width:100%;padding:12px;margin-top:12px;border-radius:8px;border:none;background:var(--muted);color:var(--text);cursor:pointer}
 
-    /* ===== EVENTO ===== */
-    .evento {
-      background: rgba(0, 10, 14, 0.6);
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border-left: 4px solid #0a3d3d;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #d9e6e6;
-      box-shadow: 0 0 12px rgba(0, 60, 70, 0.3);
-      animation: fadeInUp 0.5s ease-in-out;
-    }
+    /* Agenda button */
+    .agenda-btn{position:fixed;top:20px;right:20px;background:var(--metal);color:#000;padding:10px 14px;border-radius:8px;border:none;cursor:pointer}
 
-    /* ===== BOTÃO X (REVISADO PARA TONS ESCUROS) ===== */
-    .evento button.remover {
-      background: rgba(10, 60, 60, 0.15);
-      border: 1px solid rgba(20, 90, 90, 0.5);
-      color: #7fc1c1;
-      padding: 6px 10px;
-      font-size: 14px;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: 0.25s ease;
-      backdrop-filter: blur(3px);
-    }
+    /* Lista dentro da agenda modal */
+    .list{max-height:320px;overflow:auto;margin-top:8px}
+    .list-item{background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+    .muted{color:var(--muted);font-size:0.95rem}
 
-    .evento button.remover:hover {
-      background: rgba(20, 110, 110, 0.35);
-      color: #a8f0f0;
-      transform: scale(1.18);
-      box-shadow: 0 0 12px #0a3d3d;
-    }
-
-    /* ===== TEMA CLARO SUAVE (ESCURÃO TB) ===== */
-    .light-theme {
-      background: #cfd8d8;
-      color: #000;
-    }
-
-    .light-theme .agenda {
-      background: #f2f7f7ee;
-      border: 1px solid #0a3d3d;
-      box-shadow: 0 0 20px rgba(0, 60, 80, 0.3);
-    }
-
-    .light-theme input {
-      background: #e3eded;
-      color: #062e32;
-      border-color: #0a3d3d;
-    }
-
-    .light-theme button {
-      background: linear-gradient(135deg, #0a3d3d, #09405e);
-      color: white;
-    }
-
-    .light-theme .evento {
-      background: rgba(230, 240, 240, 0.85);
-      border-left: 4px solid #062e32;
-      color: #062e32;
-    }
-
-    /* ===== BOTÃO DE TEMA ===== */
-    #toggleTema {
-      float: right;
-      background: transparent;
-      border: 1px solid #0a3d3d;
-      padding: 6px 10px;
-      margin-top: -10px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      color: #0a3d3d;
-      font-size: 14px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    #toggleTema:hover {
-      background: rgba(10, 60, 60, 0.3);
-    }
-
-  
-
-/* ===== NOVA ORGANIZAÇÃO DO EVENTO ===== */
-.evento {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 14px;
-  background: rgba(0, 10, 14, 0.65);
-  border: 1px solid #0d2f30;
-  border-radius: 12px;
-  margin: 12px 0;
-}
-
-.evento-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.evento-titulo {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #bfe7e0;
-}
-
-.evento button.remover {
-  margin-left: 20px;
-  padding: 6px 14px;
-  border-radius: 12px;
-  font-weight: bold;
-}
-
+    /* small screens */
+    @media (max-width:520px){.modal-card{width:92%;}}
 </style>
 </head>
 <body>
-  <div class="agenda">
-    <button id="toggleTema">🌙 Tema</button>
 
-    <h2>🧠 Agenda Inteligente</h2>
+<!-- Stars generated at runtime (no blocking) -->
 
-    <input type="datetime-local" id="data">
-    <input type="text" id="evento" placeholder="Digite o evento">
-    <button id="adicionar">Adicionar Evento</button>
+<div class="panel">
+  <h1 style="margin:0;">-Agenda-</h1>
+  <p class="muted">Adicione eventos — eles são salvos automaticamente no seu navegador.</p>
+  <button class="main-btn" id="open-add">Adicionar Evento</button>
+</div>
 
-    <div id="eventos"></div>
+<!-- Add Event Modal -->
+<div class="modal" id="addModal" aria-hidden="true">
+  <div class="modal-card">
+    <button class="close-btn" id="closeAdd">✕</button>
+    <h3 style="margin:0 0 8px 0">Novo Evento</h3>
+    <input id="evt-title" placeholder="Título do evento" />
+    <textarea id="evt-desc" rows="4" placeholder="Descrição (opcional)"></textarea>
+    <button class="save-btn" id="saveEvt">Salvar evento</button>
   </div>
+</div>
 
-  <script>
-    $(document).ready(function () {
+<!-- Agenda Modal (shows saved events) -->
+<div class="modal" id="agendaModal" aria-hidden="true">
+  <div class="modal-card" style="position:relative;">
+    <button class="close-btn" id="closeAgenda">✕</button>
+    <h3 style="margin:0 0 8px 0">Agenda Salva</h3>
+    <div class="list" id="list"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:center">
+      <button id="clearAll" class="save-btn" style="background:#6b6b6b">Limpar tudo</button>
+    </div>
+  </div>
+</div>
 
-      $('#adicionar').click(function () {
-        let data = $('#data').val();
-        let evento = $('#evento').val();
+<button class="agenda-btn" id="btn-agenda">📘 Agenda</button>
 
-        if (data && evento) {
-          let dateTime = luxon.DateTime.fromISO(data).toFormat('dd/MM/yyyy HH:mm');
+<script>
+// -- State and helpers
+let events = []; // {id,title,desc,created}
+const STORAGE_KEY = 'agenda_events_v1';
 
-          let novoEvento = `
-            <div class='evento animate__animated animate__fadeInUp'>
-              <div class="evento-top">
-                <span class="evento-titulo">${evento}</span>
-                <button class='remover'>X</button>
-              </div>
-              <strong>${dateTime}</strong>
-            </div>
-          `;
+function gerarId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 
-          $('#eventos').append(novoEvento);
+function salvarStorage(){localStorage.setItem(STORAGE_KEY, JSON.stringify(events));}
+function carregarStorage(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw) events=JSON.parse(raw);}catch(e){events=[]}}
 
-          $('#data').val('');
-          $('#evento').val('');
-        } else {
-          Swal.fire('Erro', 'Preencha todos os campos!', 'error');
-        }
-      });
+// atualizar: renderiza lista e salva automaticamente
+function atualizar(){
+  // render list inside agenda modal
+  const listEl=document.getElementById('list');
+  if(!listEl) return;
+  listEl.innerHTML='';
+  if(events.length===0){ listEl.innerHTML='<div class="muted">Nenhum evento salvo.</div>'; return; }
+  events.slice().reverse().forEach(ev =>{
+    const item=document.createElement('div'); item.className='list-item';
+    const left=document.createElement('div');
+    left.innerHTML='<div style="font-weight:600">'+escapeHtml(ev.title)+'</div><div class="muted">'+(ev.desc?escapeHtml(ev.desc):'')+'</div>';
+    const right=document.createElement('div');
+    right.innerHTML='<div class="muted">'+new Date(ev.created).toLocaleString()+'</div><button data-id="'+ev.id+'" style="margin-left:10px;background:#bdbdbd;border:none;padding:6px 8px;border-radius:6px;cursor:pointer">Excluir</button>';
+    item.appendChild(left); item.appendChild(right);
+    listEl.appendChild(item);
+  });
+  // attach delete handlers
+  listEl.querySelectorAll('button[data-id]').forEach(b=>b.addEventListener('click',()=>{ const id=b.getAttribute('data-id'); events=events.filter(x=>x.id!==id); salvarStorage(); atualizar(); }));
+  salvarStorage();
+}
 
-      $(document).on('click', '.remover', function () {
-        $(this).parent().addClass('animate__fadeOut').fadeOut(300, function () {
-          $(this).remove();
-        });
-      });
+function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[s])); }
 
-      document.getElementById('toggleTema').addEventListener('click', () => {
-        document.body.classList.toggle('light-theme');
-        toggleTema.textContent =
-          document.body.classList.contains('light-theme') ? '🌞 Tema' : '🌙 Tema';
-      });
+// -- UI wiring (run after DOM ready)
+document.addEventListener('DOMContentLoaded',()=>{
+  // generate stars safely
+  for(let i=0;i<60;i++){const s=document.createElement('div');s.className='star';s.style.left=(Math.random()*100)+'vw';s.style.top=(Math.random()*100)+'vh';s.style.animationDelay=(Math.random()*2)+'s';s.style.transform='scale('+((Math.random()*1.4)+0.6)+')';document.body.appendChild(s);} 
 
-    });
-  </script>
+  // elements
+  const openAdd=document.getElementById('open-add');
+  const addModal=document.getElementById('addModal');
+  const closeAdd=document.getElementById('closeAdd');
+  const saveBtn=document.getElementById('saveEvt');
+  const titleInput=document.getElementById('evt-title');
+  const descInput=document.getElementById('evt-desc');
+  const agendaBtn=document.getElementById('btn-agenda');
+  const agendaModal=document.getElementById('agendaModal');
+  const closeAgenda=document.getElementById('closeAgenda');
+  const clearAll=document.getElementById('clearAll');
+
+  // load events then render
+  carregarStorage(); atualizar();
+
+  // open/close handlers
+  openAdd.addEventListener('click',()=>{ addModal.classList.add('show'); titleInput.focus(); });
+  closeAdd.addEventListener('click',()=>{ addModal.classList.remove('show'); });
+  saveBtn.addEventListener('click',()=>{
+    const t=titleInput.value.trim(); const d=descInput.value.trim();
+    if(!t){ alert('Digite o título do evento'); titleInput.focus(); return; }
+    events.push({id:gerarId(), title:t, desc:d, created:Date.now()});
+    titleInput.value=''; descInput.value=''; addModal.classList.remove('show'); atualizar();
+  });
+
+  agendaBtn.addEventListener('click',()=>{ agendaModal.classList.add('show'); });
+  closeAgenda.addEventListener('click',()=>{ agendaModal.classList.remove('show'); });
+  clearAll.addEventListener('click',()=>{ if(confirm('Deseja limpar todos os eventos?')){ events=[]; atualizar(); agendaModal.classList.remove('show'); } });
+
+  // close modal on backdrop click
+  document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',(e)=>{ if(e.target===m) m.classList.remove('show'); }));
+
+});
+</script>
 </body>
 </html>
