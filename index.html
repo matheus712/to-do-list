@@ -85,9 +85,10 @@
 <!-- Stars generated at runtime (no blocking) -->
 
 <div class="panel">
-  <h1 style="margin:0;">-Agenda-</h1>
+  <h1 style="margin:0;">Agenda — Cinza Metálico</h1>
   <p class="muted">Adicione eventos — eles são salvos automaticamente no seu navegador.</p>
   <button class="main-btn" id="open-add">Adicionar Evento</button>
+  <button class="main-btn" id="btn-agenda">📘 Agenda</button>
 </div>
 
 <!-- Add Event Modal -->
@@ -97,6 +98,13 @@
     <h3 style="margin:0 0 8px 0">Novo Evento</h3>
     <input id="evt-title" placeholder="Título do evento" />
     <textarea id="evt-desc" rows="4" placeholder="Descrição (opcional)"></textarea>
+
+    <div style="display:flex; gap:8px; margin-top:10px;">
+      <input id="evt-dia" type="number" placeholder="Dia" min="1" max="31" />
+      <input id="evt-mes" type="number" placeholder="Mês" min="1" max="12" />
+      <input id="evt-ano" type="number" placeholder="Ano" min="1900" max="2100" />
+    </div>
+
     <button class="save-btn" id="saveEvt">Salvar evento</button>
   </div>
 </div>
@@ -113,7 +121,7 @@
   </div>
 </div>
 
-<button class="agenda-btn" id="btn-agenda">📘 Agenda</button>
+
 
 <script>
 // -- State and helpers
@@ -174,7 +182,18 @@ document.addEventListener('DOMContentLoaded',()=>{
   saveBtn.addEventListener('click',()=>{
     const t=titleInput.value.trim(); const d=descInput.value.trim();
     if(!t){ alert('Digite o título do evento'); titleInput.focus(); return; }
-    events.push({id:gerarId(), title:t, desc:d, created:Date.now()});
+    const dia = document.getElementById('evt-dia').value.trim();
+    const mes = document.getElementById('evt-mes').value.trim();
+    const ano = document.getElementById('evt-ano').value.trim();
+    if(!dia || !mes || !ano){ alert('Preencha dia, mês e ano.'); return; }
+
+    const dataStr = `${ano}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')} 00:00:00`;
+
+    events.push({id:gerarId(), title:t, desc:d, created:dataStr});
+
+    document.getElementById('evt-dia').value='';
+    document.getElementById('evt-mes').value='';
+    document.getElementById('evt-ano').value='';
     titleInput.value=''; descInput.value=''; addModal.classList.remove('show'); atualizar();
   });
 
