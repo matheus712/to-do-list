@@ -1,209 +1,346 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agenda (cinza metálico)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stellar Agenda</title>
 
-<style>
-    :root{
-      --bg:#2b2b2b;
-      --panel:#3a3a3a;
-      --muted:#5a5a5a;
-      --metal:#d9d9d9;
-      --text:#f2f2f2;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0}
-    body{
-        margin: 0;
-        font-family: "Segoe UI", sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden;
-        position: relative;
-        -webkit-font-smoothing:antialiased;
-    }
+    <style>
+        :root {
+            --bg: #0f0f13;
+            --panel: rgba(45, 45, 50, 0.7);
+            --accent: #9ca3af;
+            --metal-light: #e5e7eb;
+            --text: #f3f4f6;
+            --danger: #ef4444;
+            --success: #10b981;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
 
-    /* Estrelas */
-    .star {
-        position: absolute;
-        width: 3px;
-        height: 3px;
-        background: var(--metal);
-        border-radius: 50%;
-        animation: blink 2s infinite ease-in-out;
-        opacity: 0.7;
-        pointer-events:none;
-    }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: radial-gradient(circle at center, #1e1e26 0%, #0f0f13 100%);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    @keyframes blink {
-        0% { opacity: 0.2; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.4); }
-        100% { opacity: 0.2; transform: scale(1); }
-    }
+        /* Estrelas com tamanhos variados */
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.5;
+            animation: pulse var(--d) infinite ease-in-out;
+        }
 
-    /* Center panel */
-    .panel{
-      width: 92%; max-width:780px; background: rgba(58,58,58,0.95); border-radius:14px; padding:22px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03);
-      display:flex;flex-direction:column;gap:16px;align-items:center;
-      text-align:center;
-    }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
 
-    .main-btn{background:var(--panel);border:1px solid var(--muted);padding:12px 20px;border-radius:8px;color:var(--text);cursor:pointer}
-    .main-btn:hover{background:#4a4a4a}
+        /* Painel Central Glassmorphism */
+        .panel {
+            width: 90%;
+            max-width: 500px;
+            background: var(--panel);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
 
-    /* Modal common */
-    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);align-items:center;justify-content:center}
-    .modal.show{display:flex}
-    .modal-card{background:var(--panel);padding:18px;border-radius:10px;min-width:280px;max-width:480px;box-shadow:0 6px 20px rgba(0,0,0,0.6);}
+        h1 { margin: 0 0 10px; font-weight: 300; letter-spacing: 4px; text-transform: uppercase; font-size: 1.8rem; }
+        .muted { color: #94a3b8; font-size: 0.9rem; margin-bottom: 25px; }
 
-    .close-btn{position:absolute;right:12px;top:12px;background:var(--panel);padding:6px 10px;border-radius:6px;border:1px solid var(--muted);cursor:pointer}
+        .main-btn {
+            background: var(--metal-light);
+            color: #111;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+        }
 
-    input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--muted);background:transparent;color:var(--text);margin-top:10px}
-    .save-btn{width:100%;padding:12px;margin-top:12px;border-radius:8px;border:none;background:var(--muted);color:var(--text);cursor:pointer}
+        .main-btn:hover { transform: translateY(-2px); background: #fff; box-shadow: 0 6px 20px rgba(255,255,255,0.2); }
 
-    /* Agenda button */
-    .agenda-btn{position:fixed;top:20px;right:20px;background:var(--metal);color:#000;padding:10px 14px;border-radius:8px;border:none;cursor:pointer}
+        /* Modais */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
 
-    /* Lista dentro da agenda modal */
-    .list{max-height:320px;overflow:auto;margin-top:8px}
-    .list-item{background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-    .muted{color:var(--muted);font-size:0.95rem}
+        .modal.show { display: flex; opacity: 1; }
 
-    /* small screens */
-    @media (max-width:520px){.modal-card{width:92%;}}
-</style>
+        .modal-card {
+            background: #1f1f23;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--glass-border);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-card { transform: scale(1); }
+
+        /* Inputs Estilizados */
+        input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #3f3f46;
+            background: #18181b;
+            color: white;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--metal-light); }
+
+        .save-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: var(--success);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Lista de Eventos */
+        .list { max-height: 350px; overflow-y: auto; margin-top: 20px; padding-right: 5px; }
+        .list::-webkit-scrollbar { width: 4px; }
+        .list::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+
+        .list-item {
+            background: #27272a;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            text-align: left;
+            border-left: 4px solid var(--metal-light);
+        }
+
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .item-title { font-weight: 600; color: #fff; }
+        .item-date { font-size: 0.75rem; color: #71717a; }
+        .item-desc { font-size: 0.85rem; color: #a1a1aa; }
+
+        .del-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            align-self: flex-end;
+        }
+
+        .del-btn:hover { background: var(--danger); color: white; }
+
+        /* Floating Agenda Button */
+        .agenda-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--panel);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .badge {
+            background: var(--metal-light);
+            color: #000;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-<!-- Stars generated at runtime (no blocking) -->
-
 <div class="panel">
-  <h1 style="margin:0;">Agenda — Cinza Metálico</h1>
-  <p class="muted">Adicione eventos — eles são salvos automaticamente no seu navegador.</p>
-  <button class="main-btn" id="open-add">Adicionar Evento</button>
-  <button class="main-btn" id="btn-agenda">📘 Agenda</button>
+    <h1>Agenda</h1>
+    <p class="muted">Organize sua rotina com elegância.</p>
+    <button class="main-btn" id="open-add">+ Novo Evento</button>
 </div>
 
-<!-- Add Event Modal -->
-<div class="modal" id="addModal" aria-hidden="true">
-  <div class="modal-card">
-    <button class="close-btn" id="closeAdd">✕</button>
-    <h3 style="margin:0 0 8px 0">Novo Evento</h3>
-    <input id="evt-title" placeholder="Título do evento" />
-    <textarea id="evt-desc" rows="4" placeholder="Descrição (opcional)"></textarea>
-
-    <div style="display:flex; gap:8px; margin-top:10px;">
-      <input id="evt-dia" type="number" placeholder="Dia" min="1" max="31" />
-      <input id="evt-mes" type="number" placeholder="Mês" min="1" max="12" />
-      <input id="evt-ano" type="number" placeholder="Ano" min="1900" max="2100" />
+<div class="modal" id="addModal">
+    <div class="modal-card">
+        <h3 style="margin-top:0">Criar Evento</h3>
+        <input id="evt-title" placeholder="O que você vai fazer?" autocomplete="off" />
+        <textarea id="evt-desc" rows="3" placeholder="Detalhes (opcional)"></textarea>
+        <div style="display:flex; gap:10px">
+            <button class="save-btn" id="saveEvt">Confirmar</button>
+            <button class="save-btn" style="background:#3f3f46" id="closeAdd">Cancelar</button>
+        </div>
     </div>
-
-    <button class="save-btn" id="saveEvt">Salvar evento</button>
-  </div>
 </div>
 
-<!-- Agenda Modal (shows saved events) -->
-<div class="modal" id="agendaModal" aria-hidden="true">
-  <div class="modal-card" style="position:relative;">
-    <button class="close-btn" id="closeAgenda">✕</button>
-    <h3 style="margin:0 0 8px 0">Agenda Salva</h3>
-    <div class="list" id="list"></div>
-    <div style="display:flex;gap:8px;margin-top:12px;justify-content:center">
-      <button id="clearAll" class="save-btn" style="background:#6b6b6b">Limpar tudo</button>
+<div class="modal" id="agendaModal">
+    <div class="modal-card" style="max-width:450px">
+        <div style="display:flex; justify-content:space-between; align-items:center">
+            <h3 style="margin:0">Meus Compromissos</h3>
+            <button id="closeAgenda" style="background:none; border:none; color:white; cursor:pointer; font-size:1.2rem">✕</button>
+        </div>
+        <div class="list" id="list"></div>
+        <button id="clearAll" style="background:none; border:1px solid #3f3f46; color:#71717a; margin-top:15px; width:100%; padding:8px; border-radius:8px; cursor:pointer">Limpar tudo</button>
     </div>
-  </div>
 </div>
 
-
+<button class="agenda-btn" id="btn-agenda">
+    <span>📘 Agenda</span>
+    <span class="badge" id="count-badge">0</span>
+</button>
 
 <script>
-// -- State and helpers
-let events = []; // {id,title,desc,created}
-const STORAGE_KEY = 'agenda_events_v1';
+let events = [];
+const STORAGE_KEY = 'agenda_premium_v1';
 
-function gerarId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-
-function salvarStorage(){localStorage.setItem(STORAGE_KEY, JSON.stringify(events));}
-function carregarStorage(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw) events=JSON.parse(raw);}catch(e){events=[]}}
-
-// atualizar: renderiza lista e salva automaticamente
-function atualizar(){
-  // render list inside agenda modal
-  const listEl=document.getElementById('list');
-  if(!listEl) return;
-  listEl.innerHTML='';
-  if(events.length===0){ listEl.innerHTML='<div class="muted">Nenhum evento salvo.</div>'; return; }
-  events.slice().reverse().forEach(ev =>{
-    const item=document.createElement('div'); item.className='list-item';
-    const left=document.createElement('div');
-    left.innerHTML='<div style="font-weight:600">'+escapeHtml(ev.title)+'</div><div class="muted">'+(ev.desc?escapeHtml(ev.desc):'')+'</div>';
-    const right=document.createElement('div');
-    right.innerHTML='<div class="muted">'+new Date(ev.created).toLocaleString()+'</div><button data-id="'+ev.id+'" style="margin-left:10px;background:#bdbdbd;border:none;padding:6px 8px;border-radius:6px;cursor:pointer">Excluir</button>';
-    item.appendChild(left); item.appendChild(right);
-    listEl.appendChild(item);
-  });
-  // attach delete handlers
-  listEl.querySelectorAll('button[data-id]').forEach(b=>b.addEventListener('click',()=>{ const id=b.getAttribute('data-id'); events=events.filter(x=>x.id!==id); salvarStorage(); atualizar(); }));
-  salvarStorage();
+// Gerenciamento de Dados
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(events)); updateUI(); }
+function load() { 
+    const data = localStorage.getItem(STORAGE_KEY);
+    if(data) events = JSON.parse(data);
+    updateUI();
 }
 
-function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[s])); }
+function updateUI() {
+    const listEl = document.getElementById('list');
+    const badge = document.getElementById('count-badge');
+    badge.innerText = events.length;
+    
+    listEl.innerHTML = '';
+    
+    if(events.length === 0) {
+        listEl.innerHTML = '<div class="muted" style="text-align:center; padding:20px">Nenhum evento agendado.</div>';
+    } else {
+        events.slice().reverse().forEach(ev => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerHTML = `
+                <div class="item-header">
+                    <span class="item-title">${escapeHtml(ev.title)}</span>
+                    <span class="item-date">${new Date(ev.created).toLocaleDateString()}</span>
+                </div>
+                ${ev.desc ? `<div class="item-desc">${escapeHtml(ev.desc)}</div>` : ''}
+                <button class="del-btn" onclick="deleteEvent('${ev.id}')">Excluir</button>
+            `;
+            listEl.appendChild(div);
+        });
+    }
+}
 
-// -- UI wiring (run after DOM ready)
-document.addEventListener('DOMContentLoaded',()=>{
-  // generate stars safely
-  for(let i=0;i<60;i++){const s=document.createElement('div');s.className='star';s.style.left=(Math.random()*100)+'vw';s.style.top=(Math.random()*100)+'vh';s.style.animationDelay=(Math.random()*2)+'s';s.style.transform='scale('+((Math.random()*1.4)+0.6)+')';document.body.appendChild(s);} 
+function deleteEvent(id) {
+    events = events.filter(e => e.id !== id);
+    save();
+}
 
-  // elements
-  const openAdd=document.getElementById('open-add');
-  const addModal=document.getElementById('addModal');
-  const closeAdd=document.getElementById('closeAdd');
-  const saveBtn=document.getElementById('saveEvt');
-  const titleInput=document.getElementById('evt-title');
-  const descInput=document.getElementById('evt-desc');
-  const agendaBtn=document.getElementById('btn-agenda');
-  const agendaModal=document.getElementById('agendaModal');
-  const closeAgenda=document.getElementById('closeAgenda');
-  const clearAll=document.getElementById('clearAll');
+function escapeHtml(s) {
+    const map = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"};
+    return s.replace(/[&<>"']/g, m => map[m]);
+}
 
-  // load events then render
-  carregarStorage(); atualizar();
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+    // Gerar Estrelas
+    for(let i=0; i<80; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 3 + 1;
+        s.style.width = size + 'px';
+        s.style.height = size + 'px';
+        s.style.left = Math.random() * 100 + 'vw';
+        s.style.top = Math.random() * 100 + 'vh';
+        s.style.setProperty('--d', (Math.random() * 3 + 2) + 's');
+        document.body.appendChild(s);
+    }
 
-  // open/close handlers
-  openAdd.addEventListener('click',()=>{ addModal.classList.add('show'); titleInput.focus(); });
-  closeAdd.addEventListener('click',()=>{ addModal.classList.remove('show'); });
-  saveBtn.addEventListener('click',()=>{
-    const t=titleInput.value.trim(); const d=descInput.value.trim();
-    if(!t){ alert('Digite o título do evento'); titleInput.focus(); return; }
-    const dia = document.getElementById('evt-dia').value.trim();
-    const mes = document.getElementById('evt-mes').value.trim();
-    const ano = document.getElementById('evt-ano').value.trim();
-    if(!dia || !mes || !ano){ alert('Preencha dia, mês e ano.'); return; }
+    const addModal = document.getElementById('addModal');
+    const agendaModal = document.getElementById('agendaModal');
+    const titleInput = document.getElementById('evt-title');
+    const descInput = document.getElementById('evt-desc');
 
-    const dataStr = `${ano}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')} 00:00:00`;
+    // Eventos de clique
+    document.getElementById('open-add').onclick = () => { addModal.classList.add('show'); titleInput.focus(); };
+    document.getElementById('closeAdd').onclick = () => addModal.classList.remove('show');
+    document.getElementById('btn-agenda').onclick = () => agendaModal.classList.add('show');
+    document.getElementById('closeAgenda').onclick = () => agendaModal.classList.remove('show');
 
-    events.push({id:gerarId(), title:t, desc:d, created:dataStr});
+    document.getElementById('saveEvt').onclick = () => {
+        const t = titleInput.value.trim();
+        if(!t) return alert("Dê um título ao evento!");
+        
+        events.push({
+            id: Date.now().toString(36),
+            title: t,
+            desc: descInput.value.trim(),
+            created: Date.now()
+        });
+        
+        titleInput.value = '';
+        descInput.value = '';
+        addModal.classList.remove('show');
+        save();
+    };
 
-    document.getElementById('evt-dia').value='';
-    document.getElementById('evt-mes').value='';
-    document.getElementById('evt-ano').value='';
-    titleInput.value=''; descInput.value=''; addModal.classList.remove('show'); atualizar();
-  });
+    document.getElementById('clearAll').onclick = () => {
+        if(confirm("Apagar todos os eventos permanentemente?")) {
+            events = [];
+            save();
+            agendaModal.classList.remove('show');
+        }
+    };
 
-  agendaBtn.addEventListener('click',()=>{ agendaModal.classList.add('show'); });
-  closeAgenda.addEventListener('click',()=>{ agendaModal.classList.remove('show'); });
-  clearAll.addEventListener('click',()=>{ if(confirm('Deseja limpar todos os eventos?')){ events=[]; atualizar(); agendaModal.classList.remove('show'); } });
+    // Fechar no fundo
+    window.onclick = (e) => {
+        if(e.target == addModal) addModal.classList.remove('show');
+        if(e.target == agendaModal) agendaModal.classList.remove('show');
+    };
 
-  // close modal on backdrop click
-  document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',(e)=>{ if(e.target===m) m.classList.remove('show'); }));
-
+    load();
 });
 </script>
 </body>
